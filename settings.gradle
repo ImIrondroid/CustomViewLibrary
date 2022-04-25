@@ -15,3 +15,5 @@ dependencyResolutionManagement {
 rootProject.name = "libary"
 include ':app'
 include ':CustomSeekBar'
+include ':ArcProgressBar'
+include ':Util'

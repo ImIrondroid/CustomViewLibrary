@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.iron.util.ifLet
 
 /**
  * @author iron.choi
@@ -22,12 +23,15 @@ class CustomSeekBar @JvmOverloads constructor(
 ) : AppCompatSeekBar(context, attrs, defStyle) {
 
     private var isTouched = false
+
     private var mLinePaint: Paint? = null
     private var mProgressPaint: Paint? = null
     private var mThumbPaint: Paint? = null
     private var mTextPaint: Paint? = null
+
     private var mUnselectTickMark: Drawable? = null
     private var mSelectTickMark: Drawable? = null
+
     private var mThumbMarkFirst: Bitmap? = null
     private var mThumbMarkSecond: Bitmap? = null
     private var mThumbMarkThird: Bitmap? = null
@@ -44,7 +48,7 @@ class CustomSeekBar @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        canvas?.let { setCustomDraw(it) }
+        canvas?.run(::setCustomDraw)
     }
 
     private fun setCustomDraw(canvas: Canvas) {
@@ -192,26 +196,20 @@ class CustomSeekBar @JvmOverloads constructor(
     }
 
     private fun clearThumbMark(canvas: Canvas?) {
-        canvas?.let {
+        canvas?.run {
             mThumbMarkFirst?.eraseColor(Color.TRANSPARENT)
             mThumbMarkSecond?.eraseColor(Color.TRANSPARENT)
             mThumbMarkThird?.eraseColor(Color.TRANSPARENT)
 
-            it.drawBitmap(mThumbMarkFirst!!, 0f , 0f, null)
-            it.drawBitmap(mThumbMarkSecond!!, 0f , 0f, null)
-            it.drawBitmap(mThumbMarkThird!!, 0f , 0f, null)
+            drawBitmap(mThumbMarkFirst!!, 0f , 0f, null)
+            drawBitmap(mThumbMarkSecond!!, 0f , 0f, null)
+            drawBitmap(mThumbMarkThird!!, 0f , 0f, null)
         }
     }
 
     private fun setTickMark() {
         mUnselectTickMark = ContextCompat.getDrawable(context, R.drawable.ic_unselect_tickmark)
         mSelectTickMark = ContextCompat.getDrawable(context, R.drawable.ic_select_tickmark)
-    }
-
-    inline fun <T: Any> ifLet(vararg elements: T?, closure: (List<T>) -> Unit) {
-        if (elements.all { it != null }) {
-            closure(elements.filterNotNull())
-        }
     }
 
     companion object {

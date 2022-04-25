@@ -10,7 +10,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ArcProgressBar" />
             <option value="$PROJECT_DIR$/CustomSeekBar" />
+            <option value="$PROJECT_DIR$/Util" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
