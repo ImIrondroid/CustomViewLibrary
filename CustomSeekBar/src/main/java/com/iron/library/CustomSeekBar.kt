@@ -25,9 +25,11 @@ class CustomSeekBar @JvmOverloads constructor(
     private var isTouched = false
 
     private var mLinePaint: Paint? = null
+    private var mLineColor: Int = 0
     private var mProgressPaint: Paint? = null
-    private var mThumbPaint: Paint? = null
-    private var mTextPaint: Paint? = null
+    private var mProgressColor: Int = 0
+    private var mThumbMarkTextPaint: Paint? = null
+    private var mThumbMarkTextColor: Int = 0
 
     private var mUnselectTickMark: Drawable? = null
     private var mSelectTickMark: Drawable? = null
@@ -37,12 +39,21 @@ class CustomSeekBar @JvmOverloads constructor(
     private var mThumbMarkThird: Bitmap? = null
 
     init {
+        setAttributeSet(attrs)
+
         setLinePaint()
         setProgressPaint()
-        setThumbPaint()
         setTextPaint()
         setThumbMark()
         setTickMark()
+    }
+
+    private fun setAttributeSet(attrs: AttributeSet?) {
+        val attributes = context.obtainStyledAttributes(attrs, R.styleable.CustomSeekBar)
+
+        mLineColor = attributes.getColor(R.styleable.CustomSeekBar_lineColor, Color.parseColor("#F8FAFC"))
+        mProgressColor = attributes.getColor(R.styleable.CustomSeekBar_progressColor, Color.parseColor("#FDC6CE"))
+        mThumbMarkTextColor = attributes.getColor(R.styleable.CustomSeekBar_thumbMarkTextColor, Color.WHITE)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -113,13 +124,13 @@ class CustomSeekBar @JvmOverloads constructor(
             canvas.restoreToCount(saveCount)
         }
 
-        ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbPaint, mTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, thumbPaint, textPaint) ->
+        ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
             val mX = (thumbMarkFirst as Bitmap).width
             if(isTouched) {
                 when(progress) {
-                    PROGRESS_FIRST -> canvas.drawBitmap(thumbMarkFirst, paddingStart.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), thumbPaint as Paint)
-                    PROGRESS_LAST -> canvas.drawBitmap(thumbMarkThird as Bitmap, -paddingEnd.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), thumbPaint as Paint)
-                    else -> canvas.drawBitmap(thumbMarkSecond as Bitmap, paddingStart.toFloat() - (mX / 2) + (progressSpacing * progress), thumbY.toFloat(), thumbPaint as Paint)
+                    PROGRESS_FIRST -> canvas.drawBitmap(thumbMarkFirst, paddingStart.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), null)
+                    PROGRESS_LAST -> canvas.drawBitmap(thumbMarkThird as Bitmap, -paddingEnd.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), null)
+                    else -> canvas.drawBitmap(thumbMarkSecond as Bitmap, paddingStart.toFloat() - (mX / 2) + (progressSpacing * progress), thumbY.toFloat(), null)
                 }
             } else {
                 clearThumbMark(canvas)
@@ -159,7 +170,7 @@ class CustomSeekBar @JvmOverloads constructor(
     private fun setLinePaint() {
         mLinePaint = Paint().apply {
             style = Paint.Style.FILL_AND_STROKE
-            color = Color.parseColor("#F8FAFC")
+            color = mLineColor
             strokeWidth = 20f
         }
     }
@@ -167,25 +178,17 @@ class CustomSeekBar @JvmOverloads constructor(
     private fun setProgressPaint() {
         mProgressPaint = Paint().apply {
             style = Paint.Style.FILL_AND_STROKE
-            color = Color.parseColor("#FDC6CE")
-            strokeWidth = 20f
-        }
-    }
-
-    private fun setThumbPaint() {
-        mThumbPaint = Paint().apply {
-            style = Paint.Style.FILL_AND_STROKE
-            color = Color.BLACK
+            color = mProgressColor
             strokeWidth = 20f
         }
     }
 
     private fun setTextPaint() {
-        mTextPaint = TextPaint().apply {
+        mThumbMarkTextPaint = TextPaint().apply {
             flags = Paint.ANTI_ALIAS_FLAG
             textAlign = Paint.Align.LEFT
             textSize = 28.0f
-            color = Color.WHITE
+            color = mThumbMarkTextColor
         }
     }
 
