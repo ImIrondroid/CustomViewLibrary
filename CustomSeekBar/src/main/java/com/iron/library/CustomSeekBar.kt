@@ -123,7 +123,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
             canvas.restoreToCount(saveCount)
         }
-
+        
         ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
             val mX = (thumbMarkFirst as Bitmap).width
             if(isTouched) {
@@ -132,22 +132,23 @@ class CustomSeekBar @JvmOverloads constructor(
                     PROGRESS_LAST -> canvas.drawBitmap(thumbMarkThird as Bitmap, -paddingEnd.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), null)
                     else -> canvas.drawBitmap(thumbMarkSecond as Bitmap, paddingStart.toFloat() - (mX / 2) + (progressSpacing * progress), thumbY.toFloat(), null)
                 }
+
+                val progressText = "${progress * 5}%"
+                val progressTextY = thumbY.toFloat() * 5 + 3
+                val extraPadding = when(progressText.length) {
+                    TEXT_SIZE_ONES -> 4
+                    TEXT_SIZE_HUNDREDS -> 7
+                    else -> 0
+                }
+
+                when(progress) {
+                    PROGRESS_FIRST -> canvas.drawText(progressText, paddingStart + extraPadding + (progressSpacing * progress), progressTextY, textPaint as Paint)
+                    PROGRESS_LAST -> canvas.drawText(progressText, (progressSpacing * progress) - extraPadding - paddingEnd, progressTextY, textPaint as Paint)
+                    else -> canvas.drawText(progressText, (progressSpacing * progress) + extraPadding, progressTextY, textPaint as Paint)
+                }
             } else {
                 clearThumbMark(canvas)
                 setThumbMark()
-            }
-
-            val progressText = "${progress * 5}%"
-            val progressTextY = thumbY.toFloat() * 5 + 3
-            val extraPadding = when(progressText.length) {
-                TEXT_SIZE_ONES -> 4
-                TEXT_SIZE_HUNDREDS -> 7
-                else -> 0
-            }
-            when(progress) {
-                PROGRESS_FIRST -> canvas.drawText(progressText, paddingStart + extraPadding + (progressSpacing * progress), progressTextY, textPaint as Paint)
-                PROGRESS_LAST -> canvas.drawText(progressText, (progressSpacing * progress) - extraPadding - paddingEnd, progressTextY, textPaint as Paint)
-                else -> canvas.drawText(progressText, (progressSpacing * progress) + extraPadding, progressTextY, textPaint as Paint)
             }
         }
     }
@@ -155,12 +156,8 @@ class CustomSeekBar @JvmOverloads constructor(
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.let {
             isTouched = when(it.action) {
-                MotionEvent.ACTION_UP -> {
-                    false
-                }
-                else -> {
-                    true
-                }
+                MotionEvent.ACTION_UP -> false
+                else -> true
             }
         }
 
