@@ -1,7 +1,10 @@
 package com.iron.library
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
@@ -9,6 +12,7 @@ import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
+import com.iron.util.ContextUtil
 import com.iron.util.ifLet
 
 /**
@@ -23,6 +27,9 @@ class CustomSeekBar @JvmOverloads constructor(
 ) : AppCompatSeekBar(context, attrs, defStyle) {
 
     private var isTouched = false
+
+    private val defaultWidth = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
+    private val defaultHeight = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
 
     private var mLinePaint: Paint? = null
     private var mLineColor: Int = 0
@@ -54,6 +61,18 @@ class CustomSeekBar @JvmOverloads constructor(
         mLineColor = attributes.getColor(R.styleable.CustomSeekBar_lineColor, Color.parseColor("#F8FAFC"))
         mProgressColor = attributes.getColor(R.styleable.CustomSeekBar_progressColor, Color.parseColor("#FDC6CE"))
         mThumbMarkTextColor = attributes.getColor(R.styleable.CustomSeekBar_thumbMarkTextColor, Color.WHITE)
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = when(widthMode) {
+            MeasureSpec.UNSPECIFIED -> defaultWidth //MeasureSpec.UNSPECIFIED: 동적으로 추가된 경우 width 또는 constraint 없을시 디폴트 사이즈로 대체
+            else -> MeasureSpec.getSize(widthMeasureSpec)
+        }
+
+        setMeasuredDimension(widthSize, defaultHeight)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -123,7 +142,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
             canvas.restoreToCount(saveCount)
         }
-        
+
         ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
             val mX = (thumbMarkFirst as Bitmap).width
             if(isTouched) {

@@ -7,8 +7,8 @@
     tools:context=".MainActivity">
 
     <com.iron.library.CustomSeekBar
-        android:layout_width="match_parent"
-        android:layout_height="42dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:max="20"
         app:thumbMarkTextColor="#000000"
         android:paddingHorizontal="16dp"

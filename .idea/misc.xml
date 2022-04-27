@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/82109/Desktop/project/CustomViewLibrary/CustomSeekBar/src/main/res/drawable/ic_seekbar_thumb_center.xml" value="0.28" />
-        <entry key="..\:/Users/82109/Desktop/project/CustomViewLibrary/app/src/main/res/layout/activity_main.xml" value="0.5328125" />
+        <entry key="..\:/Users/82109/Desktop/project/CustomViewLibrary/CustomSeekBar/src/main/res/drawable/ic_seekbar_thumb_end.xml" value="0.371" />
+        <entry key="..\:/Users/82109/Desktop/project/CustomViewLibrary/CustomSeekBar/src/main/res/drawable/ic_select_tickmark.xml" value="0.371" />
+        <entry key="..\:/Users/82109/Desktop/project/CustomViewLibrary/app/src/main/res/layout/activity_main.xml" value="0.33" />
       </map>
     </option>
   </component>
