@@ -28,8 +28,8 @@ class CustomSeekBar @JvmOverloads constructor(
 
     private var isTouched = false
 
-    private val defaultWidth = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
-    private val defaultHeight = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
+    private var mWidth = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
+    private val mHeight = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
 
     private var mLinePaint: Paint? = null
     private var mLineColor: Int = 0
@@ -67,12 +67,13 @@ class CustomSeekBar @JvmOverloads constructor(
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = when(widthMode) {
-            MeasureSpec.UNSPECIFIED -> defaultWidth //MeasureSpec.UNSPECIFIED: 동적으로 추가된 경우 width 또는 constraint 없을시 디폴트 사이즈로 대체
-            else -> MeasureSpec.getSize(widthMeasureSpec)
+        if((widthMode == MeasureSpec.EXACTLY) or (widthMode == MeasureSpec.AT_MOST)) {
+            mWidth = MeasureSpec.getSize(widthMeasureSpec)
+        } else {
+            //MeasureSpec.UNSPECIFIED: 동적으로 추가된 경우 width 또는 constraint 없을시 디폴트 사이즈로 대체
         }
 
-        setMeasuredDimension(widthSize, defaultHeight)
+        setMeasuredDimension(mWidth, mHeight)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -83,10 +84,10 @@ class CustomSeekBar @JvmOverloads constructor(
 
     private fun setCustomDraw(canvas: Canvas) {
         val rangeCount = BUTTON_RANGE_COUNT
-        val tickMarkSpacing: Float = (width - paddingStart - paddingEnd) / rangeCount.toFloat()
-        val progressSpacing: Float = (width - paddingStart - paddingEnd) / max.toFloat()
-        val progressY = height / BUTTON_RANGE_COUNT * 3
-        val thumbY = height / 16 * 1
+        val tickMarkSpacing: Float = (mWidth - paddingStart - paddingEnd) / rangeCount.toFloat()
+        val progressSpacing: Float = (mWidth - paddingStart - paddingEnd) / max.toFloat()
+        val progressY = mHeight / BUTTON_RANGE_COUNT * 3
+        val thumbY = mHeight / 16 * 1
         var tickMarkHalfWidth = 0
 
         ifLet(canvas, mLinePaint, mProgressPaint) { (canvas, linePaint, progressPaint) ->
@@ -94,7 +95,7 @@ class CustomSeekBar @JvmOverloads constructor(
                 drawLine(
                     paddingStart.toFloat(),
                     progressY.toFloat(),
-                    (width - paddingEnd).toFloat(),
+                    (mWidth - paddingEnd).toFloat(),
                     progressY.toFloat(),
                     linePaint as Paint
                 )
