@@ -27,9 +27,12 @@ class CustomSeekBar @JvmOverloads constructor(
 ) : AppCompatSeekBar(context, attrs, defStyle) {
 
     private var isTouched = false
+    private var pointCount = DEFAULT_POINT_COUNT
 
     private var mWidth = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
     private val mHeight = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
+    private var mPaddingStart = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
+    private var mPaddingEnd = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
 
     private var mLinePaint: Paint? = null
     private var mLineColor: Int = 0
@@ -37,10 +40,8 @@ class CustomSeekBar @JvmOverloads constructor(
     private var mProgressColor: Int = 0
     private var mThumbMarkTextPaint: Paint? = null
     private var mThumbMarkTextColor: Int = 0
-
     private var mUnselectTickMark: Drawable? = null
     private var mSelectTickMark: Drawable? = null
-
     private var mThumbMarkFirst: Bitmap? = null
     private var mThumbMarkSecond: Bitmap? = null
     private var mThumbMarkThird: Bitmap? = null
@@ -58,16 +59,20 @@ class CustomSeekBar @JvmOverloads constructor(
     private fun setAttributeSet(attrs: AttributeSet?) {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.CustomSeekBar)
 
+        pointCount = attributes.getInt(R.styleable.CustomSeekBar_pointCount, DEFAULT_POINT_COUNT)
         mLineColor = attributes.getColor(R.styleable.CustomSeekBar_lineColor, Color.parseColor("#F8FAFC"))
         mProgressColor = attributes.getColor(R.styleable.CustomSeekBar_progressColor, Color.parseColor("#FDC6CE"))
         mThumbMarkTextColor = attributes.getColor(R.styleable.CustomSeekBar_thumbMarkTextColor, Color.WHITE)
+
+        if(mPaddingStart < paddingStart) mPaddingStart = paddingStart
+        if(mPaddingEnd < paddingEnd) mPaddingEnd = paddingEnd
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        if((widthMode == MeasureSpec.EXACTLY) or (widthMode == MeasureSpec.AT_MOST)) {
+        if ((widthMode == MeasureSpec.EXACTLY) or (widthMode == MeasureSpec.AT_MOST)) {
             mWidth = MeasureSpec.getSize(widthMeasureSpec)
         } else {
             //MeasureSpec.UNSPECIFIED: 동적으로 추가된 경우 width 또는 constraint 없을시 디폴트 사이즈로 대체
@@ -79,92 +84,149 @@ class CustomSeekBar @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        canvas?.run(::setCustomDraw)
+        canvas?.run {
+            drawProgressBar(this)
+            drawTickMark(this)
+            drawThumbMark(this)
+        }
     }
 
-    private fun setCustomDraw(canvas: Canvas) {
-        val rangeCount = BUTTON_RANGE_COUNT
-        val tickMarkSpacing: Float = (mWidth - paddingStart - paddingEnd) / rangeCount.toFloat()
-        val progressSpacing: Float = (mWidth - paddingStart - paddingEnd) / max.toFloat()
-        val progressY = mHeight / BUTTON_RANGE_COUNT * 3
-        val thumbY = mHeight / 16 * 1
-        var tickMarkHalfWidth = 0
+    private fun drawProgressBar(canvas: Canvas) {
+        val progressHeight = mHeight / 4 * 3
+        val progressInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
 
-        ifLet(canvas, mLinePaint, mProgressPaint) { (canvas, linePaint, progressPaint) ->
-            (canvas as Canvas).apply {
+        ifLet(mLinePaint, mProgressPaint) { (linePaint, progressPaint) ->
+            canvas.apply {
                 drawLine(
-                    paddingStart.toFloat(),
-                    progressY.toFloat(),
-                    (mWidth - paddingEnd).toFloat(),
-                    progressY.toFloat(),
+                    mPaddingStart.toFloat(),
+                    progressHeight.toFloat(),
+                    (mWidth - mPaddingEnd).toFloat(),
+                    progressHeight.toFloat(),
                     linePaint as Paint
                 )
                 drawLine(
-                    paddingStart.toFloat(),
-                    progressY.toFloat(),
-                    paddingStart.toFloat() + progressSpacing * progress,
-                    progressY.toFloat(),
+                    mPaddingStart.toFloat(),
+                    progressHeight.toFloat(),
+                    mPaddingStart + progressInterval * progress,
+                    progressHeight.toFloat(),
                     progressPaint as Paint
                 )
             }
         }
+    }
+
+    private fun drawTickMark(canvas: Canvas) {
+        val pointRangeCount = pointCount - 1
+        val tickMarkInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / pointRangeCount.toFloat()
+        val progressHeight = mHeight / 4 * 3
 
         ifLet(mUnselectTickMark, mSelectTickMark) { (unSelectTickMark, selectTickMark) ->
             var tickMarkWidth: Int = unSelectTickMark.intrinsicWidth
             var tickMarkHeight: Int = unSelectTickMark.intrinsicHeight
-            var halfTickMarkWidth = if (tickMarkWidth >= 0) tickMarkWidth / 2 else 1
-            var halfTickMarkHeight = if (tickMarkHeight >= 0) tickMarkHeight / 2 else 1
-            unSelectTickMark.setBounds(-halfTickMarkWidth, -halfTickMarkHeight, halfTickMarkWidth, halfTickMarkHeight)
-            tickMarkHalfWidth = halfTickMarkWidth
+            var halfTickMarkWidth =
+                if (tickMarkWidth != -1) tickMarkWidth / 2
+                else ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_50)
+            var halfTickMarkHeight =
+                if (tickMarkHeight != -1) tickMarkHeight / 2
+                else ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_50)
+            unSelectTickMark.setBounds(
+                -halfTickMarkWidth,
+                -halfTickMarkHeight,
+                halfTickMarkWidth,
+                halfTickMarkHeight
+            )
+
             var saveCount: Int = canvas.save()
-            canvas.translate(paddingStart.toFloat(), progressY.toFloat())
-
-            for (i in 0..rangeCount) {
+            canvas.translate(mPaddingStart.toFloat(), progressHeight.toFloat())
+            for (i in 0..pointRangeCount) {
                 unSelectTickMark.draw(canvas)
-                canvas.translate(tickMarkSpacing, 0f)
+                canvas.translate(tickMarkInterval, 0f)
             }
-
             canvas.restoreToCount(saveCount)
 
             tickMarkWidth = selectTickMark.intrinsicWidth
             tickMarkHeight = selectTickMark.intrinsicHeight
-            halfTickMarkWidth = if (tickMarkWidth >= 0) tickMarkWidth / 2 else 1
-            halfTickMarkHeight = if (tickMarkHeight >= 0) tickMarkHeight / 2 else 1
-            selectTickMark.setBounds(-halfTickMarkWidth, -halfTickMarkHeight, halfTickMarkWidth, halfTickMarkHeight)
+            halfTickMarkWidth =
+                if (tickMarkWidth != -1) tickMarkWidth / 2
+                else ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_50)
+            halfTickMarkHeight =
+                if (tickMarkHeight != -1) tickMarkHeight / 2
+                else ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_50)
+            selectTickMark.setBounds(
+                -halfTickMarkWidth,
+                -halfTickMarkHeight,
+                halfTickMarkWidth,
+                halfTickMarkHeight
+            )
 
-            val choiceCount = progress / 5
+            val choiceCount = progress / pointCount
             saveCount = canvas.save()
-            canvas.translate(paddingStart.toFloat(), progressY.toFloat())
+            canvas.translate(mPaddingStart.toFloat(), progressHeight.toFloat())
 
             for (i in 0..choiceCount) {
                 selectTickMark.draw(canvas)
-                canvas.translate(tickMarkSpacing, 0f)
+                canvas.translate(tickMarkInterval, 0f)
             }
 
             canvas.restoreToCount(saveCount)
         }
+    }
+
+    private fun drawThumbMark(canvas: Canvas) {
+        val progressInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
+        val thumbHeight = mHeight / 16 * 1
 
         ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
-            val mX = (thumbMarkFirst as Bitmap).width
-            if(isTouched) {
-                when(progress) {
-                    PROGRESS_FIRST -> canvas.drawBitmap(thumbMarkFirst, paddingStart.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), null)
-                    PROGRESS_LAST -> canvas.drawBitmap(thumbMarkThird as Bitmap, -paddingEnd.toFloat() - tickMarkHalfWidth + (progressSpacing * progress), thumbY.toFloat(), null)
-                    else -> canvas.drawBitmap(thumbMarkSecond as Bitmap, paddingStart.toFloat() - (mX / 2) + (progressSpacing * progress), thumbY.toFloat(), null)
+            if (isTouched) {
+                when (progress) {
+                    0 -> canvas.drawBitmap(
+                        thumbMarkFirst as Bitmap,
+                        (mPaddingStart / 2).toFloat(),
+                        thumbHeight.toFloat(),
+                        null
+                    )
+                    max -> canvas.drawBitmap(
+                        thumbMarkThird as Bitmap,
+                        -(mPaddingEnd / 2).toFloat() + (progressInterval * progress),
+                        thumbHeight.toFloat(),
+                        null
+                    )
+                    else -> canvas.drawBitmap(
+                        thumbMarkSecond as Bitmap,
+                        //mPaddingStart.toFloat() - (mX / 2) + (progressInterval * progress),
+                        progressInterval * progress,
+                        thumbHeight.toFloat(),
+                        null
+                    )
                 }
 
                 val progressText = "${progress * 5}%"
-                val progressTextY = thumbY.toFloat() * 5 + 3
-                val extraPadding = when(progressText.length) {
+                val progressTextY = thumbHeight.toFloat() * 5 + 3
+                val extraPadding = when (progressText.length) {
                     TEXT_SIZE_ONES -> 4
                     TEXT_SIZE_HUNDREDS -> 7
                     else -> 0
                 }
 
-                when(progress) {
-                    PROGRESS_FIRST -> canvas.drawText(progressText, paddingStart + extraPadding + (progressSpacing * progress), progressTextY, textPaint as Paint)
-                    PROGRESS_LAST -> canvas.drawText(progressText, (progressSpacing * progress) - extraPadding - paddingEnd, progressTextY, textPaint as Paint)
-                    else -> canvas.drawText(progressText, (progressSpacing * progress) + extraPadding, progressTextY, textPaint as Paint)
+                when (progress) {
+                    0 -> canvas.drawText(
+                        progressText,
+                        mPaddingStart + extraPadding + (progressInterval * progress),
+                        progressTextY,
+                        textPaint as Paint
+                    )
+                    max -> canvas.drawText(
+                        progressText,
+                        (progressInterval * progress) - extraPadding - mPaddingEnd,
+                        progressTextY,
+                        textPaint as Paint
+                    )
+                    else -> canvas.drawText(
+                        progressText,
+                        (progressInterval * progress) + extraPadding,
+                        progressTextY,
+                        textPaint as Paint
+                    )
                 }
             } else {
                 clearThumbMark(canvas)
@@ -175,7 +237,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         event?.let {
-            isTouched = when(it.action) {
+            isTouched = when (it.action) {
                 MotionEvent.ACTION_UP -> false
                 else -> true
             }
@@ -210,9 +272,12 @@ class CustomSeekBar @JvmOverloads constructor(
     }
 
     private fun setThumbMark() {
-        mThumbMarkFirst = ContextCompat.getDrawable(context, R.drawable.ic_seekbar_thumb_start)?.toBitmap()
-        mThumbMarkSecond = ContextCompat.getDrawable(context, R.drawable.ic_seekbar_thumb_center)?.toBitmap()
-        mThumbMarkThird = ContextCompat.getDrawable(context, R.drawable.ic_seekbar_thumb_end)?.toBitmap()
+        mThumbMarkFirst =
+            ContextCompat.getDrawable(context, R.drawable.ic_seekbar_thumb_start)?.toBitmap()
+        mThumbMarkSecond =
+            ContextCompat.getDrawable(context, R.drawable.ic_seekbar_thumb_center)?.toBitmap()
+        mThumbMarkThird =
+            ContextCompat.getDrawable(context, R.drawable.ic_seekbar_thumb_end)?.toBitmap()
     }
 
     private fun clearThumbMark(canvas: Canvas?) {
@@ -221,9 +286,9 @@ class CustomSeekBar @JvmOverloads constructor(
             mThumbMarkSecond?.eraseColor(Color.TRANSPARENT)
             mThumbMarkThird?.eraseColor(Color.TRANSPARENT)
 
-            drawBitmap(mThumbMarkFirst!!, 0f , 0f, null)
-            drawBitmap(mThumbMarkSecond!!, 0f , 0f, null)
-            drawBitmap(mThumbMarkThird!!, 0f , 0f, null)
+            drawBitmap(mThumbMarkFirst!!, 0f, 0f, null)
+            drawBitmap(mThumbMarkSecond!!, 0f, 0f, null)
+            drawBitmap(mThumbMarkThird!!, 0f, 0f, null)
         }
     }
 
@@ -233,9 +298,7 @@ class CustomSeekBar @JvmOverloads constructor(
     }
 
     companion object {
-        const val BUTTON_RANGE_COUNT = 4
-        const val PROGRESS_FIRST = 0
-        const val PROGRESS_LAST = 20
+        const val DEFAULT_POINT_COUNT = 5
         const val TEXT_SIZE_ONES = 2
         const val TEXT_SIZE_HUNDREDS = 4
     }

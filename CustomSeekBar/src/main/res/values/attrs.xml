@@ -5,6 +5,7 @@
         <attr name="progressColor" format="color|reference" />
         <attr name="thumbMarkTextColor" format="color|reference" />
         <attr name="thumbMarkTextSize" format="dimension" />
+        <attr name="pointCount" format="integer" />
 
 
 
