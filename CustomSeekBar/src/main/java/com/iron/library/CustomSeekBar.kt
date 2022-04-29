@@ -8,12 +8,14 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.iron.util.ContextUtil
 import com.iron.util.ifLet
+import java.math.BigDecimal
 
 /**
  * @author iron.choi
@@ -93,7 +95,8 @@ class CustomSeekBar @JvmOverloads constructor(
 
     private fun drawProgressBar(canvas: Canvas) {
         val progressHeight = mHeight / 4 * 3
-        val progressInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
+        val rangeInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
+        val progressInterval = rangeInterval * progress
 
         ifLet(mLinePaint, mProgressPaint) { (linePaint, progressPaint) ->
             canvas.apply {
@@ -102,14 +105,14 @@ class CustomSeekBar @JvmOverloads constructor(
                     progressHeight.toFloat(),
                     (mWidth - mPaddingEnd).toFloat(),
                     progressHeight.toFloat(),
-                    linePaint as Paint
+                    linePaint
                 )
                 drawLine(
                     mPaddingStart.toFloat(),
                     progressHeight.toFloat(),
-                    mPaddingStart + progressInterval * progress,
+                    mPaddingStart + progressInterval,
                     progressHeight.toFloat(),
-                    progressPaint as Paint
+                    progressPaint
                 )
             }
         }
@@ -173,7 +176,8 @@ class CustomSeekBar @JvmOverloads constructor(
     }
 
     private fun drawThumbMark(canvas: Canvas) {
-        val progressInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
+        val rangeInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
+        val progressInterval = rangeInterval * progress
         val thumbHeight = mHeight / 16 * 1
 
         ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
@@ -187,46 +191,52 @@ class CustomSeekBar @JvmOverloads constructor(
                     )
                     max -> canvas.drawBitmap(
                         thumbMarkThird as Bitmap,
-                        -(mPaddingEnd / 2).toFloat() + (progressInterval * progress),
+                        -(mPaddingEnd / 2).toFloat() + progressInterval,
                         thumbHeight.toFloat(),
                         null
                     )
                     else -> canvas.drawBitmap(
                         thumbMarkSecond as Bitmap,
                         //mPaddingStart.toFloat() - (mX / 2) + (progressInterval * progress),
-                        progressInterval * progress,
+                        progressInterval,
                         thumbHeight.toFloat(),
                         null
                     )
                 }
 
-                val progressText = "${progress * 5}%"
+                val maxLength = max.toString().length
+                val thumbTextNumber =
+                    if(progress == 0) 0
+                    else (BigDecimal(progress.toDouble()).divide(BigDecimal(max.toDouble()), maxLength, BigDecimal.ROUND_HALF_UP))
+                        .toFloat()
+                        .times(100)
+                        .toInt()
+                val thumbText = "$thumbTextNumber%"
                 val progressTextY = thumbHeight.toFloat() * 5 + 3
-                val extraPadding = when (progressText.length) {
-                    TEXT_SIZE_ONES -> 4
-                    TEXT_SIZE_HUNDREDS -> 7
-                    else -> 0
-                }
+                val thumbMarkPadding = (thumbMarkSecond as Bitmap).width / 3
+                val extraPadding = if(thumbTextNumber < 10) 12 else if (thumbTextNumber < 20) 8 else 4
 
                 when (progress) {
                     0 -> canvas.drawText(
-                        progressText,
-                        mPaddingStart + extraPadding + (progressInterval * progress),
+                        thumbText,
+                        (mPaddingStart + extraPadding).toFloat(),
                         progressTextY,
                         textPaint as Paint
                     )
                     max -> canvas.drawText(
-                        progressText,
-                        (progressInterval * progress) - extraPadding - mPaddingEnd,
+                        thumbText,
+                        (mPaddingStart + extraPadding) + progressInterval - (thumbMarkPadding * 2),
                         progressTextY,
                         textPaint as Paint
                     )
-                    else -> canvas.drawText(
-                        progressText,
-                        (progressInterval * progress) + extraPadding,
-                        progressTextY,
-                        textPaint as Paint
-                    )
+                    else -> {
+                        canvas.drawText(
+                            thumbText,
+                            (mPaddingStart + extraPadding) + progressInterval - thumbMarkPadding,
+                            progressTextY,
+                            textPaint as Paint
+                        )
+                    }
                 }
             } else {
                 clearThumbMark(canvas)
