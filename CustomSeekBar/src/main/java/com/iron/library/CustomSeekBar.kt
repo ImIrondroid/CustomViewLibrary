@@ -122,6 +122,7 @@ class CustomSeekBar @JvmOverloads constructor(
         val pointRangeCount = pointCount - 1
         val tickMarkInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / pointRangeCount.toFloat()
         val progressHeight = mHeight / 4 * 3
+        val selectCount = (progress * (pointCount - 1)) / max
 
         ifLet(mUnselectTickMark, mSelectTickMark) { (unSelectTickMark, selectTickMark) ->
             var tickMarkWidth: Int = unSelectTickMark.intrinsicWidth
@@ -140,10 +141,10 @@ class CustomSeekBar @JvmOverloads constructor(
             )
 
             var saveCount: Int = canvas.save()
-            canvas.translate(mPaddingStart.toFloat(), progressHeight.toFloat())
-            for (i in 0..pointRangeCount) {
+            canvas.translate((mWidth - mPaddingEnd).toFloat(), progressHeight.toFloat())
+            for (i in 0..(pointCount - selectCount)) {
                 unSelectTickMark.draw(canvas)
-                canvas.translate(tickMarkInterval, 0f)
+                canvas.translate(-tickMarkInterval, 0f)
             }
             canvas.restoreToCount(saveCount)
 
@@ -162,15 +163,12 @@ class CustomSeekBar @JvmOverloads constructor(
                 halfTickMarkHeight
             )
 
-            val choiceCount = progress / pointCount
             saveCount = canvas.save()
             canvas.translate(mPaddingStart.toFloat(), progressHeight.toFloat())
-
-            for (i in 0..choiceCount) {
+            for (i in 0..selectCount) {
                 selectTickMark.draw(canvas)
                 canvas.translate(tickMarkInterval, 0f)
             }
-
             canvas.restoreToCount(saveCount)
         }
     }
