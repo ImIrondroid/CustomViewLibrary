@@ -19,4 +19,7 @@ object ContextUtil {
 
     fun dpToPx(context: Context, @DimenRes id: Int) =
         context.resources.getDimensionPixelSize(id)
+
+    fun pxToDp(context: Context, pixel: Int) =
+        (pixel / context.resources.displayMetrics.density).toInt()
 }
