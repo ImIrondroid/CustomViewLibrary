@@ -9,9 +9,10 @@
     <com.iron.library.CustomSeekBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:max="1000"
+        android:max="20"
         app:thumbMarkTextColor="#000000"
         app:pointCount="5"
+        android:paddingHorizontal="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

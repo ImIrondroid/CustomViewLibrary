@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import androidx.appcompat.widget.AppCompatSeekBar
 import androidx.core.content.ContextCompat
@@ -20,7 +19,7 @@ import java.math.BigDecimal
 /**
  * @author iron.choi
  * @created 2022-04-06
- * @desc
+ * @desc TickMark와 ThumbMark`
  */
 class CustomSeekBar @JvmOverloads constructor(
     context: Context,
@@ -180,23 +179,30 @@ class CustomSeekBar @JvmOverloads constructor(
 
         ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
             if (isTouched) {
+                val thumbMarkWidth = (thumbMarkSecond as Bitmap).width
+                val markExtraPadding =
+                    when (progress) {
+                        0 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
+                        max -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_37_5)
+                        else -> 0
+                    }
+
                 when (progress) {
                     0 -> canvas.drawBitmap(
                         thumbMarkFirst as Bitmap,
-                        (mPaddingStart / 2).toFloat(),
+                        (mPaddingStart - markExtraPadding).toFloat(),
                         thumbHeight.toFloat(),
                         null
                     )
                     max -> canvas.drawBitmap(
                         thumbMarkThird as Bitmap,
-                        -(mPaddingEnd / 2).toFloat() + progressInterval,
+                        (mWidth + markExtraPadding - mPaddingEnd * 2).toFloat(),
                         thumbHeight.toFloat(),
                         null
                     )
                     else -> canvas.drawBitmap(
-                        thumbMarkSecond as Bitmap,
-                        //mPaddingStart.toFloat() - (mX / 2) + (progressInterval * progress),
-                        progressInterval,
+                        thumbMarkSecond,
+                        mPaddingStart + progressInterval - (thumbMarkWidth / 2),
                         thumbHeight.toFloat(),
                         null
                     )
@@ -210,28 +216,35 @@ class CustomSeekBar @JvmOverloads constructor(
                         .times(100)
                         .toInt()
                 val thumbText = "$thumbTextNumber%"
-                val progressTextY = thumbHeight.toFloat() * 5 + 3
-                val thumbMarkPadding = (thumbMarkSecond as Bitmap).width / 3
-                val extraPadding = if(thumbTextNumber < 10) 12 else if (thumbTextNumber < 20) 8 else 4
+                val progressTextHeight = thumbHeight.toFloat() * 5 + 3
+                val thumbMarkPadding = thumbMarkSecond.width / 3
+                val textExtraPadding =
+                    when {
+                        thumbTextNumber == 0 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_37_5)
+                        thumbTextNumber < 10 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
+                        thumbTextNumber < 20 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_12_5)
+                        thumbTextNumber == 100 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
+                        else -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_6_25)
+                    }
 
                 when (progress) {
                     0 -> canvas.drawText(
                         thumbText,
-                        (mPaddingStart + extraPadding).toFloat(),
-                        progressTextY,
+                        (mPaddingStart + textExtraPadding).toFloat(),
+                        progressTextHeight,
                         textPaint as Paint
                     )
                     max -> canvas.drawText(
                         thumbText,
-                        (mPaddingStart + extraPadding) + progressInterval - (thumbMarkPadding * 2),
-                        progressTextY,
+                        (mWidth + markExtraPadding - (mPaddingEnd * 2) + textExtraPadding).toFloat(),
+                        progressTextHeight,
                         textPaint as Paint
                     )
                     else -> {
                         canvas.drawText(
                             thumbText,
-                            (mPaddingStart + extraPadding) + progressInterval - thumbMarkPadding,
-                            progressTextY,
+                            (mPaddingStart + textExtraPadding) + progressInterval - thumbMarkPadding,
+                            progressTextHeight,
                             textPaint as Paint
                         )
                     }
@@ -307,7 +320,5 @@ class CustomSeekBar @JvmOverloads constructor(
 
     companion object {
         const val DEFAULT_POINT_COUNT = 5
-        const val TEXT_SIZE_ONES = 2
-        const val TEXT_SIZE_HUNDREDS = 4
     }
 }
