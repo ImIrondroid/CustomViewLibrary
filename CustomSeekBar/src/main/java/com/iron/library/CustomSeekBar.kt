@@ -19,7 +19,12 @@ import java.math.BigDecimal
 /**
  * @author iron.choi
  * @created 2022-04-06
- * @desc TickMark와 ThumbMark`
+ * @desc TickMark와 ThumbMark가 적용된 CustomSeekBar 클래스
+ *       - width, height, padding의 기본값 설정 및 커스텀 대응
+ *       - TickMarkCount 입력값에 맞게 화면 설정 가능
+ *       - ProgressBarColor(Select : [app:progressColor="@color/black"] / UnSelect : app:lineColor="@color/black")와 같이 설정 가능
+ *       - Max값 사용자 설정에 따라 ThumbMark와 ThumbMarkText의 유동적인 위치 노출
+ *       - ThumbMarkTextColor 설정 가능
  */
 class CustomSeekBar @JvmOverloads constructor(
     context: Context,
@@ -28,7 +33,7 @@ class CustomSeekBar @JvmOverloads constructor(
 ) : AppCompatSeekBar(context, attrs, defStyle) {
 
     private var isTouched = false
-    private var pointCount = DEFAULT_POINT_COUNT
+    private var tickMarkCount = DEFAULT_POINT_COUNT
 
     private var mWidth = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
     private val mHeight = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
@@ -60,7 +65,7 @@ class CustomSeekBar @JvmOverloads constructor(
     private fun setAttributeSet(attrs: AttributeSet?) {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.CustomSeekBar)
 
-        pointCount = attributes.getInt(R.styleable.CustomSeekBar_pointCount, DEFAULT_POINT_COUNT)
+        tickMarkCount = attributes.getInt(R.styleable.CustomSeekBar_tickMarkCount, DEFAULT_POINT_COUNT)
         mLineColor = attributes.getColor(R.styleable.CustomSeekBar_lineColor, Color.parseColor("#F8FAFC"))
         mProgressColor = attributes.getColor(R.styleable.CustomSeekBar_progressColor, Color.parseColor("#FDC6CE"))
         mThumbMarkTextColor = attributes.getColor(R.styleable.CustomSeekBar_thumbMarkTextColor, Color.WHITE)
@@ -118,10 +123,10 @@ class CustomSeekBar @JvmOverloads constructor(
     }
 
     private fun drawTickMark(canvas: Canvas) {
-        val pointRangeCount = pointCount - 1
+        val pointRangeCount = tickMarkCount - 1
         val tickMarkInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / pointRangeCount.toFloat()
         val progressHeight = mHeight / 4 * 3
-        val selectCount = (progress * (pointCount - 1)) / max
+        val selectCount = (progress * (tickMarkCount - 1)) / max
 
         ifLet(mUnselectTickMark, mSelectTickMark) { (unSelectTickMark, selectTickMark) ->
             var tickMarkWidth: Int = unSelectTickMark.intrinsicWidth
@@ -141,7 +146,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
             var saveCount: Int = canvas.save()
             canvas.translate((mWidth - mPaddingEnd).toFloat(), progressHeight.toFloat())
-            for (i in 0..(pointCount - selectCount)) {
+            for (i in 0..(tickMarkCount - selectCount)) {
                 unSelectTickMark.draw(canvas)
                 canvas.translate(-tickMarkInterval, 0f)
             }

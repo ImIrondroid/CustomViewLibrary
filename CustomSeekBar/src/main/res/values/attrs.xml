@@ -4,8 +4,7 @@
         <attr name="lineColor" format="color|reference" />
         <attr name="progressColor" format="color|reference" />
         <attr name="thumbMarkTextColor" format="color|reference" />
-        <attr name="thumbMarkTextSize" format="dimension" />
-        <attr name="pointCount" format="integer" />
+        <attr name="tickMarkCount" format="integer" />
 
 
 
