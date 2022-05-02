@@ -146,7 +146,7 @@ class CustomSeekBar @JvmOverloads constructor(
 
             var saveCount: Int = canvas.save()
             canvas.translate((mWidth - mPaddingEnd).toFloat(), progressHeight.toFloat())
-            for (i in 0..(tickMarkCount - selectCount)) {
+            for (i in 0 until (tickMarkCount - selectCount)) {
                 unSelectTickMark.draw(canvas)
                 canvas.translate(-tickMarkInterval, 0f)
             }
@@ -180,7 +180,7 @@ class CustomSeekBar @JvmOverloads constructor(
     private fun drawThumbMark(canvas: Canvas) {
         val rangeInterval: Float = (mWidth - mPaddingStart - mPaddingEnd) / max.toFloat()
         val progressInterval = rangeInterval * progress
-        val thumbHeight = mHeight / 16 * 1
+        val thumbHeight = mHeight.toFloat() / 14
 
         ifLet(mThumbMarkFirst, mThumbMarkSecond, mThumbMarkThird, mThumbMarkTextPaint) { (thumbMarkFirst, thumbMarkSecond, thumbMarkThird, textPaint) ->
             if (isTouched) {
@@ -196,19 +196,19 @@ class CustomSeekBar @JvmOverloads constructor(
                     0 -> canvas.drawBitmap(
                         thumbMarkFirst as Bitmap,
                         (mPaddingStart - markExtraPadding).toFloat(),
-                        thumbHeight.toFloat(),
+                        thumbHeight,
                         null
                     )
                     max -> canvas.drawBitmap(
                         thumbMarkThird as Bitmap,
-                        (mWidth + markExtraPadding - mPaddingEnd * 2).toFloat(),
-                        thumbHeight.toFloat(),
+                        (mWidth + markExtraPadding - mPaddingEnd - thumbMarkWidth).toFloat(),
+                        thumbHeight,
                         null
                     )
                     else -> canvas.drawBitmap(
                         thumbMarkSecond,
                         mPaddingStart + progressInterval - (thumbMarkWidth / 2),
-                        thumbHeight.toFloat(),
+                        thumbHeight,
                         null
                     )
                 }
@@ -221,15 +221,14 @@ class CustomSeekBar @JvmOverloads constructor(
                         .times(100)
                         .toInt()
                 val thumbText = "$thumbTextNumber%"
-                val progressTextHeight = thumbHeight.toFloat() * 5 + 3
+                val progressTextHeight = thumbHeight * 5
                 val thumbMarkPadding = thumbMarkSecond.width / 3
                 val textExtraPadding =
                     when {
                         thumbTextNumber == 0 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_37_5)
                         thumbTextNumber < 10 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
-                        thumbTextNumber < 20 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_12_5)
-                        thumbTextNumber == 100 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
-                        else -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_6_25)
+                        thumbTextNumber == 100 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_12_5)
+                        else -> 0
                     }
 
                 when (progress) {
@@ -241,7 +240,7 @@ class CustomSeekBar @JvmOverloads constructor(
                     )
                     max -> canvas.drawText(
                         thumbText,
-                        (mWidth + markExtraPadding - (mPaddingEnd * 2) + textExtraPadding).toFloat(),
+                        (mWidth + markExtraPadding - mPaddingEnd - thumbMarkWidth + textExtraPadding).toFloat(),
                         progressTextHeight,
                         textPaint as Paint
                     )
@@ -272,6 +271,10 @@ class CustomSeekBar @JvmOverloads constructor(
         return super.onTouchEvent(event)
     }
 
+    fun setTickMarkCount(tickMarkCount: Int) {
+        this.tickMarkCount = tickMarkCount
+    }
+
     private fun setLinePaint() {
         mLinePaint = Paint().apply {
             style = Paint.Style.FILL_AND_STROKE
@@ -292,7 +295,7 @@ class CustomSeekBar @JvmOverloads constructor(
         mThumbMarkTextPaint = TextPaint().apply {
             flags = Paint.ANTI_ALIAS_FLAG
             textAlign = Paint.Align.LEFT
-            textSize = 28.0f
+            textSize = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_75).toFloat()
             color = mThumbMarkTextColor
         }
     }
