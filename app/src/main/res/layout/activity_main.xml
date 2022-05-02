@@ -7,16 +7,47 @@
     tools:context=".MainActivity">
 
     <com.iron.library.PointSeekBar
-        android:id="@+id/customSeekBar"
+        android:id="@+id/customSeekBar1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="20"
         app:thumbMarkTextColor="@color/white"
-        app:tickMarkCount="21"
-        android:paddingHorizontal="60dp"
+        app:tickMarkCount="6"
+        android:paddingHorizontal="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.05"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.iron.library.PointSeekBar
+        android:id="@+id/customSeekBar2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="50"
+        app:thumbMarkTextColor="@color/black"
+        app:tickMarkCount="11"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.15"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.iron.library.PointSeekBar
+        android:id="@+id/customSeekBar3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="10000"
+        app:thumbMarkTextColor="@color/teal_700"
+        app:tickMarkCount="4"
+        android:paddingHorizontal="24dp"
+        app:lineColor="#FFD8D8"
+        app:progressColor="#FA5F5F"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0.25"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -223,7 +223,7 @@ class PointSeekBar @JvmOverloads constructor(
                         .toInt()
                 val thumbText = "$thumbTextNumber%"
                 val progressTextHeight = thumbHeight * 5
-                val thumbMarkPadding = thumbMarkSecond.width / 3
+                val thumbMarkPadding = thumbMarkSecond.width / 2.5f
                 val textExtraPadding =
                     when {
                         thumbTextNumber == 0 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
@@ -248,7 +248,7 @@ class PointSeekBar @JvmOverloads constructor(
                     else -> {
                         canvas.drawText(
                             thumbText,
-                            (mPaddingStart + textExtraPadding) + progressInterval - thumbMarkPadding,
+                            mPaddingStart + textExtraPadding + progressInterval - thumbMarkPadding,
                             progressTextHeight,
                             textPaint as Paint
                         )
