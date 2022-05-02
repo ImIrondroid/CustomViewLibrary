@@ -25,8 +25,9 @@ import java.math.BigDecimal
  *       - ProgressBarColor(Select : [app:progressColor="@color/black"] / UnSelect : app:lineColor="@color/black")와 같이 설정 가능
  *       - Max값 사용자 설정에 따라 ThumbMark와 ThumbMarkText의 유동적인 위치 노출
  *       - ThumbMarkTextColor 설정 가능
+ *       - HD, FHD, WQHD 디스플레이 해상도 대응
  */
-class CustomSeekBar @JvmOverloads constructor(
+class PointSeekBar @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyle: Int = 0
@@ -225,7 +226,7 @@ class CustomSeekBar @JvmOverloads constructor(
                 val thumbMarkPadding = thumbMarkSecond.width / 3
                 val textExtraPadding =
                     when {
-                        thumbTextNumber == 0 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_37_5)
+                        thumbTextNumber == 0 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
                         thumbTextNumber < 10 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_25)
                         thumbTextNumber == 100 -> ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_12_5)
                         else -> 0
