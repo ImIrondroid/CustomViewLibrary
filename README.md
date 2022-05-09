@@ -30,10 +30,10 @@ This PointSeekbar is simple to use and is made to display information that can b
 
 | Name | Format | Default | Description |
 |:----:|:----:|:-------:|:-----------:|
-|lineColor|color/refernce|#F8FAFC|unselected progressbar color(Background)|
-|progressColor|color/refernce|#FDC6CE|selected progressbar color|
-|thumbMarkTextColor|color/refernce|Color.WHITE|thumbmark text color|
-|tickMarkCount|integer|Color.BLUE|5|number of tickmarks you want to display|
+|lineColor|color/refernce|#F8FAFC|Unselected progressbar color(Background)|
+|progressColor|color/refernce|#FDC6CE|Selected progressbar color|
+|thumbMarkTextColor|color/refernce|Color.WHITE|Thumbmark text color|
+|tickMarkCount|integer|5|Number of tickmarks you want to display|
 
 ## Public Methods
 
