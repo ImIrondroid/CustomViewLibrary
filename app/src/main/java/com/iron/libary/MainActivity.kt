@@ -1,6 +1,7 @@
 package com.iron.libary
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.iron.libary.databinding.ActivityMainBinding
@@ -35,11 +36,14 @@ class MainActivity : AppCompatActivity() {
         nowProgress: Int,
         nextProgress: Int
     ) {
-        binding.arcProgressBar.run {
+        val progressBar = binding.arcProgressBar
+        val propertyName = "progress"
+        progressBar.run {
             val animationTest = ObjectAnimator.ofInt(
                 binding.arcProgressBar,
-                "progress",
-                nowProgress, nextProgress
+                propertyName,
+                nowProgress,
+                nextProgress
             )
 
             animationTest.apply {

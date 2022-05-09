@@ -5,7 +5,9 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.widget.ProgressBar
 import android.graphics.RectF
+import android.util.Log
 import com.iron.util.ContextUtil
+import com.iron.util.ifLet
 
 /**
  * @author 최철훈
@@ -17,6 +19,11 @@ class ArcProgressBar @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : ProgressBar(context, attrs, defStyleAttr) {
+
+    private var mWidth: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
+    private var mHeight: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
+    private var mStartAngle: Float = 0f
+    private var mSweepAngle: Float = 360f
 
     private val DEFAULT_LINEHEIGHT = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
     private val DEFAULT_RADIUS = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_450)
@@ -30,6 +37,7 @@ class ArcProgressBar @JvmOverloads constructor(
     private var mProgressColor: Int = DEFAULT_mProgressColor
     private var mBoardWidth: Int = DEFAULT_LINEHEIGHT
     private var mDegree = DEFAULT_OFFSETDEGREE
+    private var mArcPadding = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
 
     private var mArcPaint: Paint? = null
     private var mArcRectF: RectF? = null
@@ -44,6 +52,9 @@ class ArcProgressBar @JvmOverloads constructor(
     private fun setAttributeSet(attrs: AttributeSet?) {
         val attributes = context.obtainStyledAttributes(attrs, R.styleable.ArcProgressBar)
 
+        mStartAngle = attributes.getInt(R.styleable.ArcProgressBar_startAngle, 0).toFloat()
+        mSweepAngle = attributes.getInt(R.styleable.ArcProgressBar_sweepAngle, 360).toFloat()
+
         mBoardWidth = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_borderWidth, DEFAULT_LINEHEIGHT)
         mProgressColor = attributes.getColor(R.styleable.ArcProgressBar_progressColor, DEFAULT_mProgressColor)
         mUnmProgressColor = attributes.getColor(R.styleable.ArcProgressBar_unprogresColor, DEFAULT_mUnmProgressColor)
@@ -53,15 +64,6 @@ class ArcProgressBar @JvmOverloads constructor(
 
         mDegree = attributes.getInt(R.styleable.ArcProgressBar_degree, DEFAULT_OFFSETDEGREE)
         isCapRound = attributes.getBoolean(R.styleable.ArcProgressBar_capRound, false)
-    }
-
-    private fun setArcPaint() {
-        mArcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = mArcBackgroundColor
-            style = Paint.Style.STROKE
-            strokeWidth = mBoardWidth.toFloat() // 프로그래스 바 두께 설정
-            if(isCapRound) strokeCap = Paint.Cap.ROUND // 프로그래스 바 엣지 ROUND 처리
-        }
     }
 
     @Synchronized
@@ -85,16 +87,15 @@ class ArcProgressBar @JvmOverloads constructor(
 
     @Synchronized
     override fun onDraw(canvas: Canvas) {
-        val roate = progress / max.toFloat()
-        val angle = mDegree / 2
-        val targetDegree = (300 - mDegree) * roate
+        val progressInterval = progress / max.toFloat()
+        val sweepAngle = mSweepAngle * progressInterval
 
-        mArcPaint?.run {
-            color = mUnmProgressColor
-            canvas.drawArc(mArcRectF!!, 120 + angle + targetDegree, 300 - mDegree - targetDegree , false, this)
+        ifLet(mArcPaint, mArcRectF) { (arcPaint, arcRectF) ->
+            (arcPaint as Paint).color = mUnmProgressColor
+            canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint)
 
-            color = mProgressColor
-            canvas.drawArc(mArcRectF!!, (120 + angle).toFloat(), targetDegree, false, this)
+            arcPaint.color = mProgressColor
+            canvas.drawArc(arcRectF, mStartAngle, sweepAngle, false, arcPaint)
         }
     }
 
@@ -102,10 +103,19 @@ class ArcProgressBar @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
 
         mArcRectF = RectF(
-            mBoardWidth.toFloat(),
-            mBoardWidth.toFloat(),
-            mRadius * 2 - mBoardWidth,
-            mRadius * 2 - mBoardWidth
+            mBoardWidth/2.toFloat(),
+            mBoardWidth/2.toFloat(),
+            (width - mBoardWidth/2).toFloat(),
+            (height - mBoardWidth/2).toFloat()
         )
+    }
+
+    private fun setArcPaint() {
+        mArcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = mArcBackgroundColor
+            style = Paint.Style.STROKE
+            strokeWidth = mBoardWidth.toFloat()
+            if(isCapRound) strokeCap = Paint.Cap.ROUND
+        }
     }
 }

@@ -7,6 +7,7 @@
     tools:context=".MainActivity">
 
     <LinearLayout
+        android:id="@+id/buttonLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -57,17 +58,20 @@
     <com.iron.library.ArcProgressBar
         android:id="@+id/arcProgressBar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:max="10000"
         android:progress="0"
-        app:borderWidth="6dp"
+        app:borderWidth="30dp"
         app:capRound="true"
+        app:degree="180"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.14"
+        app:layout_constraintTop_toBottomOf="@id/buttonLinearLayout"
+        app:layout_constraintVertical_bias="0"
         app:progressStyle="arc"
-        app:radius="150dp" />
+        app:radius="150dp"
+        app:startAngle="180"
+        app:sweepAngle="180" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <attr name="toolbarStyle" format="reference"/>
-    <attr name="toolbarWithArrowButtonStyle" format="reference"/>
 
     <declare-styleable name="ArcProgressBar">
+        <attr name="startAngle" format="integer"></attr>
+        <attr name="sweepAngle" format="integer"></attr>
         <attr name="borderWidth" format="dimension"></attr>
         <attr name="unprogresColor" format="color"></attr>
         <attr name="progressColor" format="color"></attr>
