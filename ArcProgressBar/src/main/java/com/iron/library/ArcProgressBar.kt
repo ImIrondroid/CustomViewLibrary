@@ -21,7 +21,7 @@ class ArcProgressBar @JvmOverloads constructor(
 ) : ProgressBar(context, attrs, defStyleAttr) {
 
     private var mWidth: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
-    private var mHeight: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_275)
+    private var mHeight: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2500)
     private var mStartAngle: Float = 0f
     private var mSweepAngle: Float = 360f
 
@@ -29,14 +29,10 @@ class ArcProgressBar @JvmOverloads constructor(
     private val DEFAULT_RADIUS = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_450)
     private val DEFAULT_mUnmProgressColor = -0x151516
     private val DEFAULT_mProgressColor = Color.YELLOW
-    private val DEFAULT_OFFSETDEGREE = 60
 
-    private var mRadius: Float = DEFAULT_RADIUS.toFloat()
-    private var mArcBackgroundColor: Int = DEFAULT_mUnmProgressColor
-    private var mUnmProgressColor: Int =DEFAULT_mUnmProgressColor
+    private var mbackgroundProgressColor: Int =DEFAULT_mUnmProgressColor
     private var mProgressColor: Int = DEFAULT_mProgressColor
     private var mBoardWidth: Int = DEFAULT_LINEHEIGHT
-    private var mDegree = DEFAULT_OFFSETDEGREE
     private var mArcPadding = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
 
     private var mArcPaint: Paint? = null
@@ -57,32 +53,34 @@ class ArcProgressBar @JvmOverloads constructor(
 
         mBoardWidth = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_borderWidth, DEFAULT_LINEHEIGHT)
         mProgressColor = attributes.getColor(R.styleable.ArcProgressBar_progressColor, DEFAULT_mProgressColor)
-        mUnmProgressColor = attributes.getColor(R.styleable.ArcProgressBar_unprogresColor, DEFAULT_mUnmProgressColor)
+        mbackgroundProgressColor = attributes.getColor(R.styleable.ArcProgressBar_backgroundProgressColor, DEFAULT_mUnmProgressColor)
 
-        mRadius = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_radius, DEFAULT_RADIUS).toFloat()
-        mArcBackgroundColor = attributes.getColor(R.styleable.ArcProgressBar_arcbgColor, DEFAULT_mUnmProgressColor)
-
-        mDegree = attributes.getInt(R.styleable.ArcProgressBar_degree, DEFAULT_OFFSETDEGREE)
         isCapRound = attributes.getBoolean(R.styleable.ArcProgressBar_capRound, false)
     }
 
     @Synchronized
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var mWidthMeasureSpec = widthMeasureSpec
-        var mHeightMeasureSpec = heightMeasureSpec
-        val widthMode = MeasureSpec.getMode(mWidthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(mHeightMeasureSpec)
-
-        if (widthMode != MeasureSpec.EXACTLY) {
-            val widthSize = (mRadius * 2 + mBoardWidth * 2).toInt()
-            mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(widthSize, MeasureSpec.EXACTLY)
-        }
-        if (heightMode != MeasureSpec.EXACTLY) {
-            val heightSize = (mRadius * 2 + mBoardWidth * 2).toInt()
-            mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY)
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        mWidth = when(widthMode) {
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(widthMeasureSpec)
+            MeasureSpec.AT_MOST -> MeasureSpec.getSize(widthMeasureSpec)
+            else -> {
+                //MeasureSpec.UNSPECIFIED: 동적으로 추가된 경우 width 또는 constraint 없을시 디폴트 사이즈로 대체
+                ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2000)
+            }
         }
 
-        super.onMeasure(mWidthMeasureSpec, mHeightMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        mHeight = when(heightMode) {
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(heightMeasureSpec)
+            MeasureSpec.AT_MOST -> mWidth
+            else -> {
+                //MeasureSpec.UNSPECIFIED: 동적으로 추가된 경우 width 또는 constraint 없을시 디폴트 사이즈로 대체
+                ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2500)
+            }
+        }
+
+        setMeasuredDimension(mWidth, mHeight)
     }
 
     @Synchronized
@@ -91,8 +89,8 @@ class ArcProgressBar @JvmOverloads constructor(
         val sweepAngle = mSweepAngle * progressInterval
 
         ifLet(mArcPaint, mArcRectF) { (arcPaint, arcRectF) ->
-            (arcPaint as Paint).color = mUnmProgressColor
-            canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint)
+            (arcPaint as Paint).color = mbackgroundProgressColor
+            canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint as Paint)
 
             arcPaint.color = mProgressColor
             canvas.drawArc(arcRectF, mStartAngle, sweepAngle, false, arcPaint)
@@ -105,14 +103,14 @@ class ArcProgressBar @JvmOverloads constructor(
         mArcRectF = RectF(
             mBoardWidth/2.toFloat(),
             mBoardWidth/2.toFloat(),
-            (width - mBoardWidth/2).toFloat(),
-            (height - mBoardWidth/2).toFloat()
+            (mWidth - mBoardWidth/2).toFloat(),
+            (mHeight - mBoardWidth/2).toFloat()
         )
     }
 
     private fun setArcPaint() {
         mArcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = mArcBackgroundColor
+            color = mbackgroundProgressColor
             style = Paint.Style.STROKE
             strokeWidth = mBoardWidth.toFloat()
             if(isCapRound) strokeCap = Paint.Cap.ROUND

@@ -5,19 +5,10 @@
         <attr name="startAngle" format="integer"></attr>
         <attr name="sweepAngle" format="integer"></attr>
         <attr name="borderWidth" format="dimension"></attr>
-        <attr name="unprogresColor" format="color"></attr>
-        <attr name="progressColor" format="color"></attr>
-        <attr name="tickWidth" format="dimension"></attr>
-        <attr name="tickDensity" format="integer"></attr>
-        <attr name="bgShow" format="boolean"></attr>
-        <attr name="radius" format="dimension"></attr>
-        <attr name="arcbgColor" format="color"></attr>
-        <attr name="degree" format="integer"></attr>
         <attr name="capRound" format="boolean"></attr>
-        <attr name="progressStyle" format="enum">
-            <enum name="tick" value="1"></enum>
-            <enum name="arc" value="0"></enum>
-        </attr>
+
+        <attr name="backgroundProgressColor" format="color"></attr>
+        <attr name="progressColor" format="color"></attr>
     </declare-styleable>
 
 </resources>

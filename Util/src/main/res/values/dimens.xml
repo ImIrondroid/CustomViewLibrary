@@ -15,4 +15,6 @@
     <dimen name="normal_450">72dp</dimen>
     <dimen name="normal_1000">160dp</dimen>
     <dimen name="normal_2000">320dp</dimen>
+    <dimen name="normal_2500">400dp</dimen>
+    <dimen name="normal_3000">480dp</dimen>
 </resources>
