@@ -5,7 +5,6 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.widget.ProgressBar
 import android.graphics.RectF
-import android.util.Log
 import com.iron.util.ContextUtil
 import com.iron.util.ifLet
 
@@ -24,16 +23,9 @@ class ArcProgressBar @JvmOverloads constructor(
     private var mHeight: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_2500)
     private var mStartAngle: Float = 0f
     private var mSweepAngle: Float = 360f
-
-    private val DEFAULT_LINEHEIGHT = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
-    private val DEFAULT_RADIUS = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_450)
-    private val DEFAULT_mUnmProgressColor = -0x151516
-    private val DEFAULT_mProgressColor = Color.YELLOW
-
-    private var mbackgroundProgressColor: Int =DEFAULT_mUnmProgressColor
-    private var mProgressColor: Int = DEFAULT_mProgressColor
-    private var mBoardWidth: Int = DEFAULT_LINEHEIGHT
-    private var mArcPadding = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
+    private var mBackgroundProgressColor: Int = -0x151516
+    private var mProgressColor: Int = Color.YELLOW
+    private var mBoardWidth: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
 
     private var mArcPaint: Paint? = null
     private var mArcRectF: RectF? = null
@@ -51,9 +43,9 @@ class ArcProgressBar @JvmOverloads constructor(
         mStartAngle = attributes.getInt(R.styleable.ArcProgressBar_startAngle, 0).toFloat()
         mSweepAngle = attributes.getInt(R.styleable.ArcProgressBar_sweepAngle, 360).toFloat()
 
-        mBoardWidth = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_borderWidth, DEFAULT_LINEHEIGHT)
-        mProgressColor = attributes.getColor(R.styleable.ArcProgressBar_progressColor, DEFAULT_mProgressColor)
-        mbackgroundProgressColor = attributes.getColor(R.styleable.ArcProgressBar_backgroundProgressColor, DEFAULT_mUnmProgressColor)
+        mBoardWidth = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_borderWidth, ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100))
+        mBackgroundProgressColor = attributes.getColor(R.styleable.ArcProgressBar_backgroundProgressColor, -0x151516)
+        mProgressColor = attributes.getColor(R.styleable.ArcProgressBar_progressColor, Color.YELLOW)
 
         isCapRound = attributes.getBoolean(R.styleable.ArcProgressBar_capRound, false)
     }
@@ -89,8 +81,8 @@ class ArcProgressBar @JvmOverloads constructor(
         val sweepAngle = mSweepAngle * progressInterval
 
         ifLet(mArcPaint, mArcRectF) { (arcPaint, arcRectF) ->
-            (arcPaint as Paint).color = mbackgroundProgressColor
-            canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint as Paint)
+            (arcPaint as Paint).color = mBackgroundProgressColor
+            canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint)
 
             arcPaint.color = mProgressColor
             canvas.drawArc(arcRectF, mStartAngle, sweepAngle, false, arcPaint)
@@ -101,16 +93,16 @@ class ArcProgressBar @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
 
         mArcRectF = RectF(
-            mBoardWidth/2.toFloat(),
-            mBoardWidth/2.toFloat(),
-            (mWidth - mBoardWidth/2).toFloat(),
-            (mHeight - mBoardWidth/2).toFloat()
+            mBoardWidth / 2 + paddingStart.toFloat(),
+            mBoardWidth / 2 + paddingTop.toFloat(),
+            (mWidth - mBoardWidth / 2) - paddingEnd.toFloat(),
+            (mHeight - mBoardWidth / 2) - paddingBottom.toFloat()
         )
     }
 
     private fun setArcPaint() {
         mArcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = mbackgroundProgressColor
+            color = mBackgroundProgressColor
             style = Paint.Style.STROKE
             strokeWidth = mBoardWidth.toFloat()
             if(isCapRound) strokeCap = Paint.Cap.ROUND
