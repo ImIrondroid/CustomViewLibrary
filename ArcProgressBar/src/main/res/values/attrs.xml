@@ -5,10 +5,17 @@
         <attr name="startAngle" format="integer"></attr>
         <attr name="sweepAngle" format="integer"></attr>
         <attr name="borderWidth" format="dimension"></attr>
-        <attr name="capRound" format="boolean"></attr>
-
-        <attr name="backgroundProgressColor" format="color"></attr>
-        <attr name="progressColor" format="color"></attr>
+        <attr name="direction" format="boolean">
+            <enum name="clockwise" value="1" />
+            <enum name="counterClockwise" value="0" />
+        </attr>
+        <attr name="strokeCap" format="integer">
+            <enum name="butt" value="0" />
+            <enum name="round" value="1" />
+            <enum name="square" value="2" />
+        </attr>
+        <attr name="backgroundProgressColor" format="color|reference"></attr>
+        <attr name="progressColor" format="color|reference"></attr>
     </declare-styleable>
 
 </resources>

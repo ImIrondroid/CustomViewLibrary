@@ -26,10 +26,11 @@ class ArcProgressBar @JvmOverloads constructor(
     private var mBackgroundProgressColor: Int = -0x151516
     private var mProgressColor: Int = Color.YELLOW
     private var mBoardWidth: Int = ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100)
+    private var isClockwise: Boolean = true
+    private var mStrokeCap = 0
 
     private var mArcPaint: Paint? = null
     private var mArcRectF: RectF? = null
-    private var isCapRound = false
 
     init {
         setAttributeSet(attrs)
@@ -42,12 +43,11 @@ class ArcProgressBar @JvmOverloads constructor(
 
         mStartAngle = attributes.getInt(R.styleable.ArcProgressBar_startAngle, 0).toFloat()
         mSweepAngle = attributes.getInt(R.styleable.ArcProgressBar_sweepAngle, 360).toFloat()
-
-        mBoardWidth = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_borderWidth, ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100))
         mBackgroundProgressColor = attributes.getColor(R.styleable.ArcProgressBar_backgroundProgressColor, -0x151516)
         mProgressColor = attributes.getColor(R.styleable.ArcProgressBar_progressColor, Color.YELLOW)
-
-        isCapRound = attributes.getBoolean(R.styleable.ArcProgressBar_capRound, false)
+        mBoardWidth = attributes.getDimensionPixelOffset(R.styleable.ArcProgressBar_borderWidth, ContextUtil.dpToPx(context, com.iron.util.R.dimen.normal_100))
+        isClockwise = attributes.getBoolean(R.styleable.ArcProgressBar_direction, true)
+        mStrokeCap = attributes.getInt(R.styleable.ArcProgressBar_strokeCap, 0)
     }
 
     @Synchronized
@@ -81,11 +81,23 @@ class ArcProgressBar @JvmOverloads constructor(
         val sweepAngle = mSweepAngle * progressInterval
 
         ifLet(mArcPaint, mArcRectF) { (arcPaint, arcRectF) ->
-            (arcPaint as Paint).color = mBackgroundProgressColor
-            canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint)
+            when(isClockwise) {
+                true -> {
+                    (arcPaint as Paint).color = mBackgroundProgressColor
+                    canvas.drawArc(arcRectF as RectF, mStartAngle, mSweepAngle , false, arcPaint)
 
-            arcPaint.color = mProgressColor
-            canvas.drawArc(arcRectF, mStartAngle, sweepAngle, false, arcPaint)
+                    arcPaint.color = mProgressColor
+                    canvas.drawArc(arcRectF, mStartAngle, sweepAngle, false, arcPaint)
+                }
+
+                false -> {
+                    (arcPaint as Paint).color = mBackgroundProgressColor
+                    canvas.drawArc(arcRectF as RectF, mStartAngle, -mSweepAngle , false, arcPaint)
+
+                    arcPaint.color = mProgressColor
+                    canvas.drawArc(arcRectF, mStartAngle, -sweepAngle, false, arcPaint)
+                }
+            }
         }
     }
 
@@ -105,7 +117,12 @@ class ArcProgressBar @JvmOverloads constructor(
             color = mBackgroundProgressColor
             style = Paint.Style.STROKE
             strokeWidth = mBoardWidth.toFloat()
-            if(isCapRound) strokeCap = Paint.Cap.ROUND
+            strokeCap =
+                when(mStrokeCap) {
+                    0 -> Paint.Cap.BUTT
+                    1 -> Paint.Cap.ROUND
+                    else -> Paint.Cap.SQUARE
+                }
         }
     }
 }
