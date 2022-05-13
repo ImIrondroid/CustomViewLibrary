@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ProgressBar
 import com.iron.libary.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -16,31 +17,47 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.button1.setOnClickListener {
-            moveProgress(0, 5000)
+            moveProgress(binding.arcProgressBar1 ,0, 5000)
         }
 
         binding.button2.setOnClickListener {
-            moveProgress(5000, 10000)
+            moveProgress(binding.arcProgressBar1, 5000, 10000)
         }
 
         binding.button3.setOnClickListener {
-            moveProgress(10000, 5000)
+            moveProgress(binding.arcProgressBar1, 10000, 5000)
         }
 
         binding.button4.setOnClickListener {
-            moveProgress(5000, 0)
+            moveProgress(binding.arcProgressBar1,5000, 0)
+        }
+
+        binding.button5.setOnClickListener {
+            moveProgress(binding.arcProgressBar2, 0, 5000)
+        }
+
+        binding.button6.setOnClickListener {
+            moveProgress(binding.arcProgressBar2, 5000, 10000)
+        }
+
+        binding.button7.setOnClickListener {
+            moveProgress(binding.arcProgressBar2, 10000, 5000)
+        }
+
+        binding.button8.setOnClickListener {
+            moveProgress(binding.arcProgressBar2, 5000, 0)
         }
     }
 
     private fun moveProgress(
+        progressBar: ProgressBar,
         nowProgress: Int,
         nextProgress: Int
     ) {
-        val progressBar = binding.arcProgressBar
         val propertyName = "progress"
         progressBar.run {
             val animationTest = ObjectAnimator.ofInt(
-                binding.arcProgressBar,
+                progressBar,
                 propertyName,
                 nowProgress,
                 nextProgress
