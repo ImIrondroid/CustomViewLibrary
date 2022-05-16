@@ -15,37 +15,37 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.button1.setOnClickListener {
-            moveProgress(binding.arcProgressBar1 ,0, 5000)
-        }
-
-        binding.button2.setOnClickListener {
-            moveProgress(binding.arcProgressBar1, 5000, 10000)
-        }
-
-        binding.button3.setOnClickListener {
-            moveProgress(binding.arcProgressBar1, 10000, 5000)
-        }
-
-        binding.button4.setOnClickListener {
-            moveProgress(binding.arcProgressBar1,5000, 0)
-        }
-
-        binding.button5.setOnClickListener {
-            moveProgress(binding.arcProgressBar2, 0, 5000)
-        }
-
-        binding.button6.setOnClickListener {
-            moveProgress(binding.arcProgressBar2, 5000, 10000)
-        }
-
-        binding.button7.setOnClickListener {
-            moveProgress(binding.arcProgressBar2, 10000, 5000)
-        }
-
-        binding.button8.setOnClickListener {
-            moveProgress(binding.arcProgressBar2, 5000, 0)
-        }
+//        binding.button1.setOnClickListener {
+//            moveProgress(binding.arcProgressBar1 ,0, 5000)
+//        }
+//
+//        binding.button2.setOnClickListener {
+//            moveProgress(binding.arcProgressBar1, 5000, 10000)
+//        }
+//
+//        binding.button3.setOnClickListener {
+//            moveProgress(binding.arcProgressBar1, 10000, 5000)
+//        }
+//
+//        binding.button4.setOnClickListener {
+//            moveProgress(binding.arcProgressBar1,5000, 0)
+//        }
+//
+//        binding.button5.setOnClickListener {
+//            moveProgress(binding.arcProgressBar2, 0, 5000)
+//        }
+//
+//        binding.button6.setOnClickListener {
+//            moveProgress(binding.arcProgressBar2, 5000, 10000)
+//        }
+//
+//        binding.button7.setOnClickListener {
+//            moveProgress(binding.arcProgressBar2, 10000, 5000)
+//        }
+//
+//        binding.button8.setOnClickListener {
+//            moveProgress(binding.arcProgressBar2, 5000, 0)
+//        }
     }
 
     private fun moveProgress(
