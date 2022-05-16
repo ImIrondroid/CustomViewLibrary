@@ -1,4 +1,4 @@
-package com.iron.libary
+package com.hairsalon.circleimageview
 
 import org.junit.Test
 

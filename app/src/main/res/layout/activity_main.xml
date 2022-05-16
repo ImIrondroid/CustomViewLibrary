@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <com.iron.library.CircleImageView
+        android:layout_width="match_parent"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_height="match_parent"/>
+
     <LinearLayout
         android:id="@+id/buttonLinearLayout"
         android:layout_width="match_parent"

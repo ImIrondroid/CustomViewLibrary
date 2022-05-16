@@ -1,11 +1,10 @@
-package com.iron.libary
+package com.iron.library
 
 import android.animation.ObjectAnimator
-import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ProgressBar
-import com.iron.libary.databinding.ActivityMainBinding
+import com.iron.library.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
