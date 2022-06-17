@@ -18,7 +18,7 @@ class EventViewFlipper(
     private var onViewChangeListener: ((View, Int) -> Unit)? = null
 
     private var count: Int? = null
-    private var index: Int = 0
+    private var index: Int = -1
 
     override fun showPrevious() {
         super.showPrevious()
@@ -37,14 +37,14 @@ class EventViewFlipper(
     override fun showNext() {
         super.showNext()
 
-        onViewChangeListener?.invoke(currentView, index)
-
         index++
         index = if (count == null) {
             index % childCount
         } else {
             index % count!!
         }
+
+        onViewChangeListener?.invoke(currentView, index)
     }
 
     fun setCount(count: Int) {
