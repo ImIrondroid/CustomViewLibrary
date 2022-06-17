@@ -8,7 +8,7 @@
 
 This PointSeekbar is simple to use and is made to display information that can be used basically.
 
-## XML attributes
+## Xml
 
 ```xml
     <com.iron.library.PointSeekBar
@@ -26,7 +26,7 @@ This PointSeekbar is simple to use and is made to display information that can b
         app:layout_constraintTop_toTopOf="parent" />
 ```
 
-## XML attributes
+## Attributes
 
 | Name | Format | Default | Description |
 |:----:|:----:|:-------:|:-----------:|
@@ -59,7 +59,7 @@ This PointSeekbar is simple to use and is made to display information that can b
 
 Use this when you want to use a ProgressBar composed of semicircles.
 
-## XML attributes
+## Xml
 
 ```xml
     <com.iron.library.ArcProgressBar
@@ -78,7 +78,7 @@ Use this when you want to use a ProgressBar composed of semicircles.
         app:sweepAngle="180" />
 ```
 
-## XML attributes
+## Attributes
 
 | Name | Format | Default | Description |
 | --- | --- | --- | --- |
@@ -100,3 +100,98 @@ Use this when you want to use a ProgressBar composed of semicircles.
 - This AcrProgressBar can change the shape of the bar being drawn. Also, the background color can be modified to the user's desired color.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
+
+# 3. EventViewFlipper
+
+![EventViewFlipper](https://user-images.githubusercontent.com/48594786/174335370-fda65006-f039-4607-8a53-dda892922f5a.gif)
+
+## Description
+
+Use a ViewFlipper to bind data of any size using 2 TextViews.
+
+## Kotlin
+
+```kotlin
+override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val messageList = listOf(
+            "First Message",
+            "Second Message",
+            "Third Message",
+            "Fourth Message",
+            "Fifth Message"
+        )
+
+        binding.eventViewFlipper.apply {
+            setCount(messageList.size)
+            setOnViewChangeListener { view, index ->
+                (view as TextView).text = messageList[index]
+            }
+            flipInterval = 2000
+        }
+
+        binding.start.setOnClickListener {
+            binding.eventViewFlipper.startFlipping()
+        }
+
+        binding.stop.setOnClickListener {
+            binding.eventViewFlipper.stopFlipping()
+        }
+
+        binding.next.setOnClickListener {
+            binding.eventViewFlipper.showNext()
+        }
+
+        binding.previous.setOnClickListener {
+            binding.eventViewFlipper.showPrevious()
+        }
+    }
+```
+## Xml
+
+```xml
+    <com.iron.library.EventViewFlipper
+        android:id="@+id/eventViewFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/first_textView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/second_textView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="20dp" />
+
+    </com.iron.library.EventViewFlipper>
+```
+
+## Properties
+
+| Name | Parameter or Type | Default Value | Description |
+| --- | --- | --- | --- |
+| onViewChangeListener | (View, Int) -> Unit) | null | Listener executed when current view is set to next view by ViewFlipper |
+| count | Int? | null | Size of data to bind to View |
+| index | Int | 0 | The index of the data referenced for binding to the view |
++ Please check the source code to check member methods except for member variables.
+
+##
+
+## Note
+
+- This EventViewFlipper was created for the purpose of reusing Views. It's the same reason I gave an example using 2 TextViews.
+- This EventViewFlipper can be used to sequentially bind data whose size is larger than the size of the childView.
+- This EventViewFlipper can be started and stopped automatically, and manually running showNext() or showPrevious() works fine.
