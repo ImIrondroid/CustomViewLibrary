@@ -12,12 +12,12 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/ArcProgressBar" />
             <option value="$PROJECT_DIR$/CircleImageView" />
+            <option value="$PROJECT_DIR$/EventViewFlipper" />
             <option value="$PROJECT_DIR$/PointSeekBar" />
             <option value="$PROJECT_DIR$/Util" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
