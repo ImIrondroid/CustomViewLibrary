@@ -5,6 +5,7 @@ import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.AttributeSet
+import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 
 /**
@@ -17,36 +18,36 @@ class CircleImageView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : AppCompatImageView(context, attrs) {
 
-    private val mShaderMatrix: Matrix = Matrix()
-    private var mBitmap: Bitmap? = null
-    private var mBitmapShader: Shader? = null
-    private val mBitmapPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val mBitmapDrawBounds: RectF = RectF()
+    private val shaderMatrix: Matrix = Matrix()
+    private var bitmap: Bitmap? = null
+    private var bitmapShader: Shader? = null
+    private val bitmapPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val bitmapDrawBounds: RectF = RectF()
 
     init {
         setBitmap()
     }
 
     override fun onDraw(canvas: Canvas?) {
-        canvas?.run { drawOval(mBitmapDrawBounds, mBitmapPaint) }
+        canvas?.run { drawOval(bitmapDrawBounds, bitmapPaint) }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        setBitmapDrawBounds(mBitmapDrawBounds)
+        setBitmapDrawBounds(bitmapDrawBounds)
         resizeBitmap()
     }
 
     private fun setBitmap() {
-        mBitmap = getBitmapFromDrawable(drawable) ?: return
-        mBitmapShader = BitmapShader(mBitmap!!, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-        mBitmapPaint.shader = mBitmapShader
+        bitmap = getBitmapFromDrawable(drawable) ?: return
+        bitmapShader = BitmapShader(bitmap!!, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        bitmapPaint.shader = bitmapShader
 
         resizeBitmap()
     }
 
-    private fun setBitmapDrawBounds(bounds: RectF) { //ImageView 가로 세로길이에 따라 적절한 위치(CENTER_VERTICAL|CENTER_HORIZONTAL) 설정하기
+    private fun setBitmapDrawBounds(bounds: RectF) { //ImageView 가로/세로 길이에 따라 적절한 가운데 위치 설정
         val calculatedWidth = (width - paddingLeft - paddingRight).toFloat()
         val calculatedHeight = (height - paddingTop - paddingBottom).toFloat()
         var calculatedLeft = paddingLeft.toFloat()
@@ -85,31 +86,31 @@ class CircleImageView @JvmOverloads constructor(
     }
 
     private fun resizeBitmap() {
-        if (mBitmap == null) return
+        if (bitmap == null) return
 
-        val bitmapWidth = mBitmap?.width ?: return
-        val bitmapHeight = mBitmap?.height ?: return
-        val bitmapBoundsWidth = mBitmapDrawBounds.width()
-        val bitmapBoundsHeight = mBitmapDrawBounds.height()
+        val bitmapWidth = bitmap?.width ?: return
+        val bitmapHeight = bitmap?.height ?: return
+        val bitmapBoundsWidth = bitmapDrawBounds.width()
+        val bitmapBoundsHeight = bitmapDrawBounds.height()
         val scale: Float
         val dx: Float
         val dy: Float
 
         if (bitmapWidth < bitmapHeight) {
             scale = (bitmapBoundsWidth / bitmapWidth)
-            dx = mBitmapDrawBounds.left
-            dy = mBitmapDrawBounds.top - (bitmapHeight * scale / 2) + (bitmapBoundsWidth / 2)
+            dx = bitmapDrawBounds.left
+            dy = bitmapDrawBounds.top - (bitmapHeight * scale / 2) + (bitmapBoundsWidth / 2)
         } else {
             scale = (bitmapBoundsHeight / bitmapHeight)
-            dx = mBitmapDrawBounds.left - (bitmapWidth * scale / 2) + (bitmapBoundsWidth / 2)
-            dy = mBitmapDrawBounds.top
+            dx = bitmapDrawBounds.left - (bitmapWidth * scale / 2) + (bitmapBoundsWidth / 2)
+            dy = bitmapDrawBounds.top
         }
 
-        mShaderMatrix.apply {
+        shaderMatrix.apply {
             setScale(scale, scale)
             postTranslate(dx, dy)
         }.also { matrix ->
-            mBitmapShader!!.setLocalMatrix(matrix)
+            bitmapShader!!.setLocalMatrix(matrix)
         }
     }
 }
