@@ -101,7 +101,48 @@ Use this when you want to use a ProgressBar composed of semicircles.
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
-# 3. EventViewFlipper
+# 3. CircleImageView
+
+![CircleImageView](https://user-images.githubusercontent.com/48594786/174344738-781fb30c-5518-4553-b061-ad88d72e0f21.PNG)
+
+## Description
+
+If you need a circular image like the profile image above, use CircleImageView.
+
+## Xml
+
+```xml
+    <com.iron.library.CircleImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/profile"
+        android:paddingHorizontal="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+```
+
+## Properties
+
+| Name | Parameter or Type | Default Value | Description |
+| --- | --- | --- | --- |
+| shaderMatrix | Matrix | Default object | Used to zoom in and move coordinates of a bitmap |
+| bitmap | Bitmap? | null | Used to convert Drawable to Bitmap and save it |
+| bitmapShader | Shader? | null | Used for tiling bitmaps |
+| bitmapPaint | Paint | Default object | Used to define properties of a bitmap |
+| bitmapDrawBounds | Rect | Default object | Used to store the coordinates of the bitmap |
++ Please check the source code to check member methods except for member variables.
+
+##
+
+## Note
+
+- This CircleImageView enlarges/reduces the Bitmap and sets it to the desired size and appropriate ratio.
+- This CircleImageView works properly when you use src instead of background among Attributes.
+- This CircleImageView will automatically be centered horizontally/vertically.
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+# 4. EventViewFlipper
 
 ![EventViewFlipper](https://user-images.githubusercontent.com/48594786/174335370-fda65006-f039-4607-8a53-dda892922f5a.gif)
 
