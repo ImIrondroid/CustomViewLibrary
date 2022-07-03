@@ -47,6 +47,7 @@ dependencies {
 
 //    implementation project(path: ':PointSeekBar')
 //    implementation project(path: ':ArcProgressBar')
-    implementation project(path: ':CircleImageView')
+//    implementation project(path: ':CircleImageView')
 //    implementation project(path: ':EventViewFlipper')
+    implementation project(path: ':ColorPicker')
 }
